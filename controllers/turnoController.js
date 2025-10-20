@@ -36,7 +36,27 @@ const crearTurno = async (req, res) => {
     }
 };
 
+const obtenerTurnos = async (req, res) => {
+    try {
+        const turnos = await Turno.find().sort({ fecha: 1, hora: 1 }); 
+        
+        res.status(200).json({
+            success: true,
+            count: turnos.length,
+            data: turnos
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ 
+            success: false, 
+            msg: 'Error al obtener los turnos.',
+            error: error.message 
+        });
+    }
+};
+
 module.exports = {
     crearTurno,
+    obtenerTurnos,
     
 };

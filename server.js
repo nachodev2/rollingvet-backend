@@ -7,11 +7,11 @@ const connectDB = require('./config/db');
 connectDB();
 
 const app = express();
-
+const turnoRoutes = require('./routes/turnoRoutes');
 
 app.use(cors()); 
 app.use(express.json());
-app.use('/api/turnos', require('./routes/turnoRoutes'));
+app.use('/api/turnos', turnoRoutes);
 
 app.get('/', (req, res) => {
     res.send('API de RollingVet está corriendo...');
