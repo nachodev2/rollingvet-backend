@@ -1,4 +1,4 @@
-// rollingvet-backend/controllers/turnoController.js
+
 
 const Turno = require('../models/Turno');
 
@@ -55,8 +55,60 @@ const obtenerTurnos = async (req, res) => {
     }
 };
 
+const actualizarTurno = async (req, res) => {
+    try {
+        const turno = await Turno.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true
+        });
+
+        if (!turno) {
+            return res.status(404).json({ success: false, msg: 'Turno no encontrado.' });
+        }
+        
+        res.status(200).json({
+            success: true,
+            msg: 'Turno actualizado con éxito.',
+            data: turno
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ 
+            success: false, 
+            msg: 'Error al actualizar el turno. Verifique los datos.', 
+            error: error.message 
+        });
+    }
+}
+
+const eliminarTurno = async (req, res) => {
+    try {
+        const turno = await Turno.findByIdAndDelete(req.params.id);
+
+        if (!turno) {
+            return res.status(404).json({ success: false, msg: 'Turno no encontrado.' });
+        }
+
+        res.status(200).json({
+            success: true,
+            msg: 'Turno eliminado con éxito.'
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ 
+            success: false, 
+            msg: 'Error del servidor al eliminar el turno.',
+            error: error.message 
+        });
+    }
+};
+
 module.exports = {
     crearTurno,
     obtenerTurnos,
+    actualizarTurno,
+    eliminarTurno,
     
 };
