@@ -1,0 +1,12 @@
+# Dependencias de Node
+/node_modules
+
+# Variables de Entorno y Secretos
+.env
+.env.*
+
+# Archivos de logs y temporales de npm/IDE
+npm-debug.log*
+yarn-debug.log*
+.DS_Store
+/dist
