@@ -69,4 +69,8 @@ UsuarioSchema.methods.matchPassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
 
+UsuarioSchema.methods.needsPasswordHash = function() {
+    return this.password && !this.password.startsWith('$2');
+};
+
 module.exports = mongoose.model('Usuario', UsuarioSchema);
