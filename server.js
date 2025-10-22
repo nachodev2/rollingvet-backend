@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const connectDB = require('./config/db');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 // Conectar a la base de datos
 connectDB();
@@ -10,7 +11,9 @@ connectDB();
 const auth = require("./routes/auth");
 const turnos = require("./routes/turnoRoutes");
 const pacientes = require("./routes/pacientesRoutes");
+const servicios = require("./routes/servicioRoutes");
 const Usuario = require('./models/Usuario');
+const Servicio = require('./models/Servicio'); // ← AGREGAR ESTA IMPORTACIÓN
 const authController = require('./controllers/auth');
 
 const app = express();
@@ -44,6 +47,8 @@ console.log('✅ Ruta /api/v1/usuarios registrada');
 app.use("/api/v1/turnos", turnos);
 app.use("/api/v1/auth", auth);
 app.use("/api/v1/pacientes", pacientes);
+app.use("/api/v1/servicios", servicios);
+app.use("/api/v1/payments", paymentRoutes);
 
 app.get("/", (req, res) => {
   res.send("API de RollingVet está corriendo...");
