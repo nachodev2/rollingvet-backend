@@ -1,4 +1,4 @@
-const Usuario = require('../models/Usuario');
+const Paciente = require('../models/Paciente');
 const ErrorResponse = require('../utils/errorResponse'); 
 const asyncHandler = require('../middleware/async');
 const ms = require('ms');
@@ -27,13 +27,20 @@ const sendTokenResponse = (user, statusCode, res) => {
 
 
 exports.register = asyncHandler(async (req, res, next) => {
-    const { nombre, email, password, role } = req.body;
+    const { nombre, email, password, role, telefono } = req.body;
 
     const user = await Usuario.create({
         nombre,
         email,
         password,
-        role
+        role: role || 'user',
+    });
+
+    const paciente = await Paciente.create({
+        nombreDueno: nombre,
+        emailDueno: email,
+        telefonoDueno: telefono,
+        usuarioId: user._id
     });
 
     sendTokenResponse(user, 201, res);
