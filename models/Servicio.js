@@ -37,7 +37,6 @@ const ServicioSchema = new mongoose.Schema({
         default: true
     },
 
-    // Información adicional opcional
     requiereAyuno: {
         type: Boolean,
         default: false
@@ -51,16 +50,13 @@ const ServicioSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Index para búsqueda por nombre y categoría
 ServicioSchema.index({ nombre: 'text', categoria: 1 });
 ServicioSchema.index({ activo: 1, categoria: 1 });
 
-// Virtual para formatear precio
 ServicioSchema.virtual('precioFormateado').get(function() {
     return `$${this.precio.toLocaleString('es-AR')}`;
 });
 
-// Método para obtener servicios activos por categoría
 ServicioSchema.statics.getServiciosActivos = function(categoria = null) {
     const query = { activo: true };
     if (categoria) {
@@ -69,7 +65,6 @@ ServicioSchema.statics.getServiciosActivos = function(categoria = null) {
     return this.find(query).sort({ nombre: 1 });
 };
 
-// Método para validar precio
 ServicioSchema.methods.validarPrecio = function() {
     return this.precio >= 0;
 };

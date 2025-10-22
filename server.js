@@ -23,15 +23,6 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
-// Log de todas las requests
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path}`);
-  next();
-});
-
-// RUTA DE USUARIOS - DEBE IR PRIMERO
-console.log('🔧 Registrando ruta GET /api/v1/usuarios...');
-
 app.get('/api/v1/usuarios', async (req, res) => {
   try {
     const usuarios = await Usuario.find({role: 'user'}).select('-password');
@@ -40,8 +31,6 @@ app.get('/api/v1/usuarios', async (req, res) => {
     res.json({ success: false, error: err.message });
   }
 });
-
-console.log('✅ Ruta /api/v1/usuarios registrada');
 
 // Otras rutas
 app.use("/api/v1/turnos", turnos);
