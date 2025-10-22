@@ -30,7 +30,7 @@ const crearTurno = async (req, res) => {
         
         res.status(400).json({ 
             success: false, 
-            msg: 'Error al crear el turno. Verifica los datos.', 
+            msg: 'Error al crear el turno. Verificá los datos.', 
             error: error.message 
         });
     }
