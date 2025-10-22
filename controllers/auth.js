@@ -1,17 +1,17 @@
+const jwt = require('jsonwebtoken');
 const Usuario = require('../models/Usuario');
 const Paciente = require('../models/Paciente');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const ms = require('ms');
 
-
 const sendTokenResponse = (user, statusCode, res) => {
     const token = user.getSignedJwtToken();
 
     const options = {
-    expires: new Date(Date.now() + ms(process.env.JWT_EXPIRE)),
-    httpOnly: true 
-};
+        expires: new Date(Date.now() + ms(process.env.JWT_EXPIRE)),
+        httpOnly: true 
+    };
 
     if (process.env.NODE_ENV === 'production') {
         options.secure = true;
@@ -25,7 +25,6 @@ const sendTokenResponse = (user, statusCode, res) => {
             user
         });
 };
-
 
 exports.register = asyncHandler(async (req, res, next) => {
     console.log('req.body:', req.body);
@@ -48,14 +47,13 @@ exports.register = asyncHandler(async (req, res, next) => {
         emailDueno: finalEmail,
         password: finalPassword,
         telefonoDueno: finalTelefono,
-        nombreMascota: 'Sin mascota aún', // Valor por defecto
-        especie: 'Desconocida', // Valor por defecto
+        nombreMascota: 'Sin mascota aún',
+        especie: 'Desconocida',
         usuarioId: user._id
     });
 
     sendTokenResponse(user, 201, res);
 });
-
 
 exports.login = asyncHandler(async (req, res, next) => {
     const { email, password } = req.body;
@@ -79,12 +77,70 @@ exports.login = asyncHandler(async (req, res, next) => {
     sendTokenResponse(user, 200, res);
 });
 
-exports.protect = asyncHandler(async (req, res, next) => {
+// Obtener todos los usuarios (solo admin)
+exports.obtenerUsuarios = asyncHandler(async (req, res, next) => {
+    console.log(`✅ Obteniendo usuarios para admin: ${req.user.email} (${req.user.role})`);
+    const usuarios = await Usuario.find().select('-password');
+    console.log(`📊 Usuarios encontrados: ${usuarios.length}`);
 
+    res.status(200).json({
+        success: true,
+        count: usuarios.length,
+        data: usuarios
+    });
 });
 
+// Middleware de autenticación
+exports.protect = asyncHandler(async (req, res, next) => {
+    let token;
 
+    console.log('🔐 Headers authorization:', req.headers.authorization);
+    console.log('🍪 Cookies:', req.cookies.token ? 'Cookie presente' : 'Sin cookie');
+
+    if (
+        req.headers.authorization &&
+        req.headers.authorization.startsWith('Bearer')
+    ) {
+        token = req.headers.authorization.split(' ')[1];
+        console.log('✅ Token extraído del header');
+    } else if (req.cookies.token) {
+        token = req.cookies.token;
+        console.log('✅ Token extraído de cookie');
+    }
+
+    if (!token) {
+        console.log('❌ No hay token');
+        return next(new ErrorResponse('No estás autorizado para acceder a esta ruta', 401));
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log('✅ Token decodificado:', decoded);
+        
+        req.user = await Usuario.findById(decoded.id);
+        
+        if (!req.user) {
+            console.log('❌ Usuario no encontrado en BD');
+            return next(new ErrorResponse('Usuario no encontrado', 401));
+        }
+        
+        console.log('✅ Usuario autenticado:', req.user.email, 'Role:', req.user.role);
+        next();
+    } catch (error) {
+        console.log('❌ Error verificando token:', error.message);
+        return next(new ErrorResponse('No estás autorizado para acceder a esta ruta', 401));
+    }
+});
+
+// Middleware de autorización por rol
 exports.authorize = (...roles) => {
     return (req, res, next) => {
+        console.log(`🔒 Autorizando: user role "${req.user.role}", required roles: [${roles.join(', ')}]`);
+        if (!roles.includes(req.user.role)) {
+            console.log('❌ Acceso denegado - rol insuficiente');
+            return next(new ErrorResponse('No tienes permisos para acceder a esta acción', 403));
+        }
+        console.log('✅ Acceso permitido');
+        next();
     };
 };

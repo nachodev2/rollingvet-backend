@@ -27,7 +27,7 @@ const UsuarioSchema = new mongoose.Schema({
     role: {
         type: String,
         enum: ['user', 'admin'],
-        default: 'admin' 
+        default: 'user'  // ⚠️ CAMBIÉ DE 'admin' A 'user' - Por seguridad
     },
     createdAt: {
         type: Date,
@@ -43,10 +43,18 @@ UsuarioSchema.pre('save', async function(next) {
     this.password = await bcrypt.hash(this.password, salt);
 });
 
+// ✅ ARREGLADO: Ahora incluye id Y role en el token
 UsuarioSchema.methods.getSignedJwtToken = function() {
-    return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRE
-    });
+    return jwt.sign(
+        { 
+            id: this._id,
+            role: this.role 
+        }, 
+        process.env.JWT_SECRET, 
+        {
+            expiresIn: process.env.JWT_EXPIRE
+        }
+    );
 };
 
 UsuarioSchema.methods.matchPassword = async function(enteredPassword) {

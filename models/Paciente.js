@@ -37,6 +37,15 @@ const PacienteSchema = new mongoose.Schema({
     type: String,
     default: "Desconocida",
   },
+  sexo: {
+    type: String,
+  },
+  edad: {
+    type: Number,
+  },
+  peso: {
+    type: Number,
+  },
   fechaNacimientoMascota: {
     type: Date,
   },
