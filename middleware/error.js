@@ -3,20 +3,24 @@ const ErrorResponse = require('../utils/errorResponse');
 const errorHandler = (err, req, res, next) => {
     let error = { ...err };
     error.message = err.message;
+
     console.log(err);
 
+    // Mongoose bad ObjectId
     if (err.name === 'CastError') {
-        const message = `Recurso no encontrado con id de ${err.value}`;
+        const message = 'Recurso no encontrado';
         error = new ErrorResponse(message, 404);
     }
 
+    // Mongoose duplicate key
     if (err.code === 11000) {
-        const message = 'Ya existe un campo con ese valor. El email ya fue registrado';
+        const message = 'Valor duplicado ingresado';
         error = new ErrorResponse(message, 400);
     }
 
+    // Mongoose validation error
     if (err.name === 'ValidationError') {
-        const messages = Object.values(err.errors).map(val => val.message);
+        const message = Object.values(err.errors).map(val => val.message);
         error = new ErrorResponse(message, 400);
     }
 
@@ -24,7 +28,6 @@ const errorHandler = (err, req, res, next) => {
         success: false,
         error: error.message || 'Error del servidor'
     });
-}
-
+};
 
 module.exports = errorHandler;
