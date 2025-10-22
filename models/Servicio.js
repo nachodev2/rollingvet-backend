@@ -1,3 +1,26 @@
+<<<<<<< HEAD
+const mongoose = require("mongoose");
+
+const ServicioSchema = new mongoose.Schema({
+  nombre: {
+    type: String,
+    required: [true, "El nombre del servicio es obligatorio"],
+    trim: true,
+  },
+  descripcion: {
+    type: String,
+    trim: true,
+  },
+  costo: {
+    type: Number,
+    required: [true, "El costo es obligatorio"],
+    min: [0, "El costo debe ser positivo"],
+  },
+  createdAt: { type: Date, default: Date.now },
+});
+
+module.exports = mongoose.model("Servicio", ServicioSchema);
+=======
 const mongoose = require('mongoose');
 
 const ServicioSchema = new mongoose.Schema({
@@ -75,3 +98,4 @@ ServicioSchema.methods.validarPrecio = function() {
 };
 
 module.exports = mongoose.model('Servicio', ServicioSchema);
+>>>>>>> 54cd63967687a84848e01a9bd87b60e29a5664e1

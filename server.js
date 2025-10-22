@@ -11,6 +11,7 @@ connectDB();
 const auth = require("./routes/auth");
 const turnos = require("./routes/turnoRoutes");
 const pacientes = require("./routes/pacientesRoutes");
+const servicios = require("./routes/serviciosRoutes");
 const servicios = require("./routes/servicioRoutes");
 const Usuario = require('./models/Usuario');
 const Servicio = require('./models/Servicio'); // ← AGREGAR ESTA IMPORTACIÓN
