@@ -29,26 +29,14 @@ app.use((req, res, next) => {
 // RUTA DE USUARIOS - DEBE IR PRIMERO
 console.log('🔧 Registrando ruta GET /api/v1/usuarios...');
 
-app.get('/api/v1/usuarios', 
-  authController.protect, 
-  authController.authorize('admin'), 
-  async (req, res, next) => {
-    try {
-      console.log('✅ Ejecutando handler /api/v1/usuarios');
-      console.log('Usuario autenticado:', req.user.email, 'Role:', req.user.role);
-      const usuarios = await Usuario.find().select('-password');
-      console.log(`📊 Usuarios encontrados: ${usuarios.length}`);
-      return res.status(200).json({ 
-        success: true, 
-        count: usuarios.length, 
-        data: usuarios 
-      });
-    } catch (err) {
-      console.error('❌ Error en /api/v1/usuarios:', err);
-      next(err);
-    }
+app.get('/api/v1/usuarios', async (req, res) => {
+  try {
+    const usuarios = await Usuario.find().select('-password');
+    res.json({ success: true, count: usuarios.length, data: usuarios });
+  } catch (err) {
+    res.json({ success: false, error: err.message });
   }
-);
+});
 
 console.log('✅ Ruta /api/v1/usuarios registrada');
 
