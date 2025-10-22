@@ -10,6 +10,7 @@ connectDB();
 const auth = require("./routes/auth");
 const turnos = require("./routes/turnoRoutes");
 const pacientes = require("./routes/pacientesRoutes");
+const servicios = require("./routes/serviciosRoutes");
 const Usuario = require('./models/Usuario');
 const authController = require('./controllers/auth');
 
@@ -44,6 +45,7 @@ console.log('✅ Ruta /api/v1/usuarios registrada');
 app.use("/api/v1/turnos", turnos);
 app.use("/api/v1/auth", auth);
 app.use("/api/v1/pacientes", pacientes);
+app.use("/api/v1/servicios", servicios);
 
 app.get("/", (req, res) => {
   res.send("API de RollingVet está corriendo...");

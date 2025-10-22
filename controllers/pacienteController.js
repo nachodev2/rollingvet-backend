@@ -1,5 +1,6 @@
 const Paciente = require('../models/Paciente');
 const Usuario = require('../models/Usuario');
+const Servicio = require('../models/Servicio');
 const asyncHandler = require('../middleware/async');
 const ErrorResponse = require('../utils/errorResponse');
 const bcrypt = require('bcryptjs');
@@ -95,6 +96,66 @@ exports.actualizarPaciente = asyncHandler(async (req, res, next) => {
 });
 
 
+// ===== FUNCIONES PARA SERVICIOS =====
+
+exports.obtenerServicios = asyncHandler(async (req, res, next) => {
+  const servicios = await Servicio.find();
+  res.status(200).json({
+    success: true,
+    count: servicios.length,
+    data: servicios
+  });
+});
+
+exports.obtenerServicio = asyncHandler(async (req, res, next) => {
+  const servicio = await Servicio.findById(req.params.id);
+
+  if (!servicio) {
+    return next(
+      new ErrorResponse(`Servicio no encontrado con id de ${req.params.id}`, 404)
+    );
+  }
+  res.status(200).json({ success: true, data: servicio });
+});
+
+exports.crearServicio = asyncHandler(async (req, res, next) => {
+  const servicio = await Servicio.create(req.body);
+  res.status(201).json({ success: true, data: servicio });
+});
+
+exports.actualizarServicio = asyncHandler(async (req, res, next) => {
+  let servicio = await Servicio.findById(req.params.id);
+
+  if (!servicio) {
+    return next(
+      new ErrorResponse(`Servicio no encontrado con id de ${req.params.id}`, 404)
+    );
+  }
+
+  servicio = await Servicio.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true
+  });
+
+  res.status(200).json({ success: true, data: servicio });
+});
+
+exports.eliminarServicio = asyncHandler(async (req, res, next) => {
+  const servicio = await Servicio.findById(req.params.id);
+
+  if (!servicio) {
+    return next(
+      new ErrorResponse(`Servicio no encontrado con id de ${req.params.id}`, 404)
+    );
+  }
+
+  await servicio.deleteOne();
+
+  res.status(200).json({ success: true, data: {} });
+});
+
+// PARA PACIENTES
+
 exports.eliminarPaciente = asyncHandler(async (req, res, next) => {
     const paciente = await Paciente.findById(req.params.id);
 
@@ -104,7 +165,7 @@ exports.eliminarPaciente = asyncHandler(async (req, res, next) => {
         );
     }
 
-    await paciente.deleteOne(); 
+    await paciente.deleteOne();
 
     res.status(200).json({ success: true, data: {} });
 });
