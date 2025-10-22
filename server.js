@@ -31,7 +31,7 @@ console.log('🔧 Registrando ruta GET /api/v1/usuarios...');
 
 app.get('/api/v1/usuarios', async (req, res) => {
   try {
-    const usuarios = await Usuario.find().select('-password');
+    const usuarios = await Usuario.find({role: 'user'}).select('-password');
     res.json({ success: true, count: usuarios.length, data: usuarios });
   } catch (err) {
     res.json({ success: false, error: err.message });

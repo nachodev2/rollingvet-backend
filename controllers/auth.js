@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const Usuario = require('../models/Usuario');
 const Paciente = require('../models/Paciente');
 const ErrorResponse = require('../utils/errorResponse');
@@ -56,25 +57,77 @@ exports.register = asyncHandler(async (req, res, next) => {
 });
 
 exports.login = asyncHandler(async (req, res, next) => {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+    email = email.trim();
+    password = password.trim();
+    console.log('Login attempt: email:', email, 'password:', password);
 
     if (!email || !password) {
         return next(new ErrorResponse('Por favor ingrese email y contraseña', 400));
     }
 
     const user = await Usuario.findOne({ email }).select('+password');
+    console.log('User found:', user ? user.email : 'none');
 
     if (!user) {
+        console.log('Error: User not found');
         return next(new ErrorResponse('Credenciales inválidas', 401));
     }
 
     const isMatch = await user.matchPassword(password);
+    console.log('Entered password:', password);
+    console.log('Stored hash:', user.password);
+    console.log('Password match:', isMatch);
 
     if (!isMatch) {
+        console.log('Error: Password incorrect');
         return next(new ErrorResponse('Credenciales inválidas', 401));
     }
 
     sendTokenResponse(user, 200, res);
+});
+
+// Cambiar contraseña
+// Cambiar contraseña
+exports.changePassword = asyncHandler(async (req, res, next) => {
+    console.log('Change password requested by:', req.user.email);
+    const user = await Usuario.findById(req.user._id).select('+password');
+    console.log('User reloaded with password:', user ? 'yes' : 'no', 'password field:', user.password ? 'present' : 'null');
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+    console.log('changePassword req.body:', { oldPassword, newPasswordConfirm: confirmPassword });
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+        return next(new ErrorResponse('Por favor ingrese todas las contraseñas', 400));
+    }
+
+    // Verificar contraseña antigua
+    if (!(await user.matchPassword(oldPassword))) {
+        return next(new ErrorResponse('Contraseña antigua incorrecta', 400));
+    }
+
+    // Validaciones nueva contraseña
+    if (newPassword.length < 6) {
+        return next(new ErrorResponse('La nueva contraseña debe tener al menos 6 caracteres', 400));
+    }
+
+    if (newPassword === oldPassword) {
+        return next(new ErrorResponse('La nueva contraseña debe ser diferente a la anterior', 400));
+    }
+
+    if (newPassword !== confirmPassword) {
+        return next(new ErrorResponse('Las contraseñas nuevas no coinciden', 400));
+    }
+
+    // Generar hash nueva contraseña
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+
+    await user.save();
+
+    sendTokenResponse(user, 200, res);
+
+    // Responde con token incluido para auto-login
+    // El frontend puede usar el token para continuar sesión
 });
 
 // Obtener todos los usuarios (solo admin)

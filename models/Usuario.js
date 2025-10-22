@@ -39,8 +39,16 @@ UsuarioSchema.pre('save', async function(next) {
     if (!this.isModified('password')) {
         next();
     }
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+
+    // Si ya es un hash bcrypt, no volver a hashear
+    if (this.password && this.password.startsWith('$2b$')) {
+        console.log('Password ya hasheada, saltando pre-save');
+        next();
+    } else {
+        console.log('Hasheando password nuevo');
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+    }
 });
 
 // ✅ ARREGLADO: Ahora incluye id Y role en el token
