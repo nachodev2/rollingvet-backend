@@ -1,10 +1,26 @@
 const express = require('express');
-const { register, login, changePassword, protect } = require('../controllers/auth');
+const {
+    register,
+    login,
+    changePassword,
+    crearUsuario,
+    obtenerUsuarios,
+    debugUser,
+    protect,
+    authorize
+} = require('../controllers/auth');
 
 const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
 router.put('/change-password', protect, changePassword);
+
+// Debug route (temporary)
+router.get('/debug/:email', debugUser);
+
+// Rutas de administración (solo admin)
+router.post('/admin/users', protect, authorize('admin'), crearUsuario);
+router.get('/admin/users', protect, authorize('admin'), obtenerUsuarios);
 
 module.exports = router;
