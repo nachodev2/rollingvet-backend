@@ -4,9 +4,6 @@ const Turno = require('../models/Turno');
 const Servicio = require('../models/Servicio');
 const { MercadoPagoConfig, Preference } = require('mercadopago');
 
-// Configuración de Mercado Pago
-const client = new MercadoPagoConfig({ accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN });
-
 const crearTurno = async (req, res) => {
     try {
         const { fecha, hora, detalleCita, servicio: servicioId, veterinario, mascota, observaciones } = req.body;
@@ -203,6 +200,7 @@ const pagarTurno = async (req, res) => {
             }
         };
 
+        const client = new MercadoPagoConfig({ accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN });
         const preferenceClient = new Preference(client);
         const response = await preferenceClient.create({ body: preference });
 

@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const { protect } = require('../controllers/auth');
 const { crearTurno, obtenerTurnos, obtenerTurno, actualizarTurno, eliminarTurno, pagarTurno, procesarPagoTurno } = require('../controllers/turnoController');
+
+router.use(protect);
 
 router.post('/', crearTurno);
 router.get('/', obtenerTurnos);
