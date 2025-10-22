@@ -7,7 +7,7 @@ const {
 } = require('../controllers/pacienteController');
 
 
-const { protect, authorize } = require('../middleware/auth'); 
+const { protect, authorize } = require('../controllers/auth'); 
 
 const router = express.Router();
 

@@ -6,7 +6,7 @@ const ErrorResponse = require('../utils/errorResponse');
 
 
 exports.obtenerPacientes = asyncHandler(async (req, res, next) => {
-    const pacientes = await Paciente.find({ role: 'user' }); 
+    const pacientes = await Paciente.find({ role: 'user' }).select('-password'); 
 
     res.status(200).json({
         success: true,

@@ -28,12 +28,10 @@ const PacienteSchema = new mongoose.Schema({
 
   nombreMascota: {
     type: String,
-    required: [true, "El nombre de la mascota es obligatorio"],
     trim: true,
   },
   especie: {
     type: String,
-    required: [true, "La especie es obligatoria"],
   },
   raza: {
     type: String,

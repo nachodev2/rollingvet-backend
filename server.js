@@ -1,6 +1,11 @@
+require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const connectDB = require('./config/db');
+
+// Conectar a la base de datos
+connectDB();
 
 const auth = require("./routes/auth");
 const turnos = require("./routes/turnoRoutes");

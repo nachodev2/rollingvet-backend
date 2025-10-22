@@ -1,5 +1,6 @@
+const Usuario = require('../models/Usuario');
 const Paciente = require('../models/Paciente');
-const ErrorResponse = require('../utils/errorResponse'); 
+const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const ms = require('ms');
 
@@ -27,19 +28,28 @@ const sendTokenResponse = (user, statusCode, res) => {
 
 
 exports.register = asyncHandler(async (req, res, next) => {
-    const { nombre, email, password, role, telefono } = req.body;
+    console.log('req.body:', req.body);
+    const { nombreDueno, nombre, name, emailDueno, email, password, pass, role, telefonoDueno, telefono, telefonoProveedor } = req.body;
+    const finalNombre = nombreDueno || nombre || name;
+    const finalEmail = emailDueno || email;
+    const finalPassword = password || pass;
+    const finalTelefono = telefonoDueno || telefono || telefonoProveedor;
+    console.log('final nombre:', finalNombre, 'email:', finalEmail, 'final password:', finalPassword, 'final telefono:', finalTelefono);
 
     const user = await Usuario.create({
-        nombre,
-        email,
-        password,
+        nombre: finalNombre,
+        email: finalEmail,
+        password: finalPassword,
         role: role || 'user',
     });
 
     const paciente = await Paciente.create({
-        nombreDueno: nombre,
-        emailDueno: email,
-        telefonoDueno: telefono,
+        nombreDueno: finalNombre,
+        emailDueno: finalEmail,
+        password: finalPassword,
+        telefonoDueno: finalTelefono,
+        nombreMascota: 'Sin mascota aún', // Valor por defecto
+        especie: 'Desconocida', // Valor por defecto
         usuarioId: user._id
     });
 
@@ -68,3 +78,13 @@ exports.login = asyncHandler(async (req, res, next) => {
 
     sendTokenResponse(user, 200, res);
 });
+
+exports.protect = asyncHandler(async (req, res, next) => {
+
+});
+
+
+exports.authorize = (...roles) => {
+    return (req, res, next) => {
+    };
+};
