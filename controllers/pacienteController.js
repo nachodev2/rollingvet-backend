@@ -34,30 +34,30 @@ exports.crearPaciente = asyncHandler(async (req, res, next) => {
         const tempPassword = req.body.nombreDueno.replace(/\s+/g, '').toLowerCase();
         req.body.password = await bcrypt.hash(tempPassword, 10);
 
-        console.log(`Hash generado para '${tempPassword}': ${req.body.password}`);
+        
 
-        // Enviar el password temporal al admin (opcional)
-        console.log(`Password temporal para nuevo paciente '${req.body.nombreDueno}': ${tempPassword}`);
+        
+        
     }
 
     try {
-        // Intentar crear Usuario correspondiente para login
+        
         const usuario = await Usuario.create({
             nombre: req.body.nombreDueno,
             email: req.body.emailDueno,
-            password: req.body.password, // Ya hasheada
+            password: req.body.password, 
             role: req.body.role || 'user'
         });
 
-        console.log('✅ Usuario creado:', usuario.email);
+        
 
         const paciente = await Paciente.create(req.body);
 
-        // Link paciente a usuario
+        
         paciente.usuarioId = usuario._id;
         await paciente.save();
 
-        console.log('✅ Paciente creado y linked a usuario');
+        
 
         paciente.password = undefined;
         res.status(201).json({ success: true, data: paciente });
@@ -96,7 +96,7 @@ exports.actualizarPaciente = asyncHandler(async (req, res, next) => {
 });
 
 
-// ===== FUNCIONES PARA SERVICIOS =====
+
 
 exports.obtenerServicios = asyncHandler(async (req, res, next) => {
   const servicios = await Servicio.find();
@@ -154,7 +154,7 @@ exports.eliminarServicio = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: {} });
 });
 
-// PARA PACIENTES
+
 
 exports.eliminarPaciente = asyncHandler(async (req, res, next) => {
     const paciente = await Paciente.findById(req.params.id);

@@ -16,10 +16,10 @@ router.post('/register', register);
 router.post('/login', login);
 router.put('/change-password', protect, changePassword);
 
-// Debug route (temporary)
+
 router.get('/debug/:email', debugUser);
 
-// Rutas de administración (solo admin)
+
 router.post('/admin/users', protect, authorize('admin'), crearUsuario);
 router.get('/admin/users', protect, authorize('admin'), obtenerUsuarios);
 
