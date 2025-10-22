@@ -5,7 +5,7 @@ const cookieParser = require("cookie-parser");
 const connectDB = require('./config/db');
 const paymentRoutes = require('./routes/paymentRoutes');
 
-// Conectar a la base de datos
+
 connectDB();
 
 const auth = require("./routes/auth");
@@ -18,7 +18,7 @@ const authController = require('./controllers/auth');
 
 const app = express();
 
-// Middlewares globales
+
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
@@ -32,7 +32,7 @@ app.get('/api/v1/usuarios', async (req, res) => {
   }
 });
 
-// Otras rutas
+
 app.use("/api/v1/turnos", turnos);
 app.use("/api/v1/auth", auth);
 app.use("/api/v1/pacientes", pacientes);
@@ -43,7 +43,7 @@ app.get("/", (req, res) => {
   res.send("API de RollingVet está corriendo...");
 });
 
-// Error handler simple (en caso de que el archivo no exista)
+
 app.use((err, req, res, next) => {
   console.error('Error:', err);
   res.status(err.statusCode || 500).json({
@@ -52,9 +52,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
-  console.log(`📍 Ruta disponible: http://localhost:${PORT}/api/v1/usuarios`);
-});
+const PORT = process.env.PORT || 5000
